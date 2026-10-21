@@ -1,0 +1,27 @@
+{
+  "urban_density_threshold_people_per_km2": 500,
+  "membership_policy": "approved preliminary SA1 registry, followed by original spatial growth exclusions",
+  "growth_suburbs": [
+    "Box Hill (NSW)",
+    "Marsden Park",
+    "Riverstone",
+    "Schofields",
+    "Vineyard",
+    "Shanes Park",
+    "Colebee",
+    "Austral",
+    "Leppington",
+    "Catherine Field",
+    "Oran Park",
+    "Gregory Hills",
+    "Gledswood Hills",
+    "Edmondson Park",
+    "Badgerys Creek",
+    "Luddenham",
+    "Bringelly",
+    "Appin (NSW)",
+    "Gilead",
+    "Menangle Park"
+  ],
+  "historical_finding": "The saved preliminary membership reproduces exactly at 50, not 500. Density 500 is an urban-core diagnostic; the approved geography is frozen explicitly."
+}

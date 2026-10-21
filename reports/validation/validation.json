@@ -1,0 +1,218 @@
+{
+  "status": "passed",
+  "rows": 16228,
+  "study_area": {
+    "density_threshold": 500,
+    "greater_sydney_sa1s": 12175,
+    "urban_core_sa1s_at_500": 11138,
+    "preliminary_sa1s": 10753,
+    "excluded_growth_sa1s": 250,
+    "final_sa1s": 10503,
+    "selection_method": "approved preliminary SA1 registry + spatial growth-suburb exclusion"
+  },
+  "toilets": {
+    "national_records": 25624,
+    "missing_coordinate_records": 0,
+    "grid_records": 2570,
+    "occupied_hexagons": 1911
+  },
+  "raw_sources": {
+    "verified_raw_files": 153,
+    "all_checksums_match": true
+  },
+  "osm_counts": {
+    "context_objects": 48309,
+    "is_active_shop": 11616,
+    "is_food": 6580,
+    "is_bus_stop": 21465,
+    "is_train_station": 199
+  },
+  "park_coverage": {
+    "available_park_polygons": 6998,
+    "area_context_parks": 6493,
+    "extraction_bbox_wgs84": [
+      150.45,
+      -34.25,
+      151.4,
+      -33.35
+    ],
+    "centres_inside_extraction_bbox": 16228,
+    "nearest_distance_below_bbox_edge_distance": 16228,
+    "minimum_edge_distance_minus_nearest_distance_m": 4982.120876428059,
+    "scope": "nearest among available extracted park polygons; OSM completeness and complete relation coverage are not guaranteed"
+  },
+  "population_context": {
+    "context_sa1s": 10873,
+    "context_population": 4701164.0
+  },
+  "baseline_comparison": {
+    "absolute_tolerance": 1e-06,
+    "relative_tolerance": 1e-10,
+    "removed_legacy_columns": [
+      "park_250m",
+      "park_500m"
+    ],
+    "comparisons": [
+      {
+        "column": "toilet_count",
+        "changed_hexagons": 0,
+        "max_absolute_difference": 0.0,
+        "reason": "unchanged within numerical tolerance"
+      },
+      {
+        "column": "population_est",
+        "changed_hexagons": 0,
+        "max_absolute_difference": 2.2737367544323206e-13,
+        "reason": "unchanged within numerical tolerance"
+      },
+      {
+        "column": "population_density",
+        "changed_hexagons": 0,
+        "max_absolute_difference": 3.637978807091713e-12,
+        "reason": "unchanged within numerical tolerance"
+      },
+      {
+        "column": "shop_inside",
+        "changed_hexagons": 0,
+        "max_absolute_difference": 0.0,
+        "reason": "unchanged within numerical tolerance"
+      },
+      {
+        "column": "shop_250m",
+        "changed_hexagons": 0,
+        "max_absolute_difference": 0.0,
+        "reason": "unchanged within numerical tolerance"
+      },
+      {
+        "column": "shop_500m",
+        "changed_hexagons": 0,
+        "max_absolute_difference": 0.0,
+        "reason": "unchanged within numerical tolerance"
+      },
+      {
+        "column": "food_inside",
+        "changed_hexagons": 0,
+        "max_absolute_difference": 0.0,
+        "reason": "unchanged within numerical tolerance"
+      },
+      {
+        "column": "food_250m",
+        "changed_hexagons": 0,
+        "max_absolute_difference": 0.0,
+        "reason": "unchanged within numerical tolerance"
+      },
+      {
+        "column": "food_500m",
+        "changed_hexagons": 0,
+        "max_absolute_difference": 0.0,
+        "reason": "unchanged within numerical tolerance"
+      },
+      {
+        "column": "bus_stop_inside",
+        "changed_hexagons": 0,
+        "max_absolute_difference": 0.0,
+        "reason": "unchanged within numerical tolerance"
+      },
+      {
+        "column": "bus_stop_250m",
+        "changed_hexagons": 0,
+        "max_absolute_difference": 0.0,
+        "reason": "unchanged within numerical tolerance"
+      },
+      {
+        "column": "bus_stop_500m",
+        "changed_hexagons": 0,
+        "max_absolute_difference": 0.0,
+        "reason": "unchanged within numerical tolerance"
+      },
+      {
+        "column": "train_station_inside",
+        "changed_hexagons": 0,
+        "max_absolute_difference": 0.0,
+        "reason": "unchanged within numerical tolerance"
+      },
+      {
+        "column": "train_station_250m",
+        "changed_hexagons": 0,
+        "max_absolute_difference": 0.0,
+        "reason": "unchanged within numerical tolerance"
+      },
+      {
+        "column": "train_station_500m",
+        "changed_hexagons": 0,
+        "max_absolute_difference": 0.0,
+        "reason": "unchanged within numerical tolerance"
+      },
+      {
+        "column": "park_area_inside_m2",
+        "changed_hexagons": 0,
+        "max_absolute_difference": 1.4551915228366852e-11,
+        "reason": "unchanged within numerical tolerance"
+      },
+      {
+        "column": "park_area_250m_m2",
+        "changed_hexagons": 0,
+        "max_absolute_difference": 2.9103830456733704e-11,
+        "reason": "unchanged within numerical tolerance"
+      },
+      {
+        "column": "park_area_500m_m2",
+        "changed_hexagons": 0,
+        "max_absolute_difference": 5.820766091346741e-11,
+        "reason": "unchanged within numerical tolerance"
+      },
+      {
+        "column": "distance_nearest_park_m",
+        "changed_hexagons": 110,
+        "max_absolute_difference": 2190.052315402103,
+        "reason": "all available parks replace the restricted 500 m park subset"
+      },
+      {
+        "column": "population_250m",
+        "changed_hexagons": 0,
+        "max_absolute_difference": 4.547473508864641e-13,
+        "reason": "unchanged within numerical tolerance"
+      },
+      {
+        "column": "population_500m",
+        "changed_hexagons": 0,
+        "max_absolute_difference": 1.8189894035458565e-12,
+        "reason": "unchanged within numerical tolerance"
+      }
+    ]
+  },
+  "exports_sha256": {
+    "sydney_hex_features.csv": "2eb7b9d523e6be4f351c974968bb58c67e6dcdfb82bb44809d006b7b4a0ffa85",
+    "sydney_hex_features.geojson": "f8898429ea8b9fdbf5df130cc085c83715999c0ebf615601a343ce6a05a32770",
+    "sydney_hex_features.gpkg": "f80c9b5721c490c310f7f50d8c4f234d81b9e3493fb4d572c5b0a16ceaa8cd75"
+  },
+  "python": "3.14.3",
+  "source_sha256": {
+    "src/urbangap/__init__.py": "bd2a07192b3dd23944759f854fbfe300925d337f3c2df46b82c15b783350bb30",
+    "src/urbangap/common.py": "47c7c9592596fc07cd5844bab005a82ed9dfaedc100ea0df93e079b0a520d6d8",
+    "src/urbangap/grid.py": "f03d013b6d5c87da12a4356dd3cf45ca47d44d049a6dceb81138f7570691f482",
+    "src/urbangap/osm.py": "95122ae4fa1a1955962993b17131b064589bcd2269fdb55d35478fd8666d5dc2",
+    "src/urbangap/pipeline.py": "f7e8176383db42fb8f20f0e4f204adfd80740c0aa8d7b3cee1cfdfee4873d301",
+    "src/urbangap/population.py": "aa98124de5f8a93a87939b10316bb90f41ae1e919cd153aa63d344ac73511522",
+    "src/urbangap/study.py": "1a77c65e1bd321ca0900790cd1f78821fa0985d8ca1e0fd123e0983a0e351cd2",
+    "src/urbangap/validation.py": "45ab72872711080802a20dbbbe988dc6639a840ec0cb9b2c4208d0a598d94d09",
+    "scripts/check_notebooks.py": "128d988f3274cfcd49046c671529db35b0a1fde8b79ff7f8e43e50b6acd3b37b",
+    "scripts/run_pipeline.py": "8bfcff4436dd7375bf31554421f1147770edbc1f34fe245ce683bb7b7f659005",
+    "scripts/validate_outputs.py": "e639cf5df389b12a68bc4f2f999f1ec0c8fb6a0a3d435ca0ebbcc078f5a2f1c1",
+    "docs/approved_final_sa1_ids.txt": "916f75a78bba583029cb3c2c35c4663cdfd590b233f3e1099983df05f9b27bf0",
+    "docs/approved_hex_ids.txt": "3b17856fa1ff5b9357a1d3191d2dd681a38e2df8c15e806bc72a9fbc3b830267",
+    "docs/approved_preliminary_sa1_ids.txt": "ffaf69a5ae24e240cc4474d4f9a686729d74e3539b6ccb88e7652671ed0bdc20",
+    "docs/study_selection.json": "abc3bcb57b14d7848fab2a2bad257dc4374320231568c0267a0ee99376f4de6c",
+    "requirements-lock.txt": "df05d56438681100205250fd13ad5c5de0b5a61a8fd499123095c6f27c48e12e",
+    "pyproject.toml": "6df1f73108388a00135e674680a7c6d74f73c80ab601ff05395f33f7833138ca"
+  },
+  "packages": {
+    "geopandas": "1.2.0",
+    "shapely": "2.2.0",
+    "pandas": "3.0.6",
+    "numpy": "2.5.4",
+    "h3": "4.5.0",
+    "pyogrio": "0.13.0",
+    "pyproj": "3.8.0"
+  }
+}

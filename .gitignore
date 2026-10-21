@@ -17,3 +17,15 @@ notebooks/*.html
 # Databases
 *.duckdb
 *.duckdb.wal
+
+# Historical snapshots contain full datasets and notebook outputs.
+archive/
+
+# Build metadata, caches and execution artifacts
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+.jupyter/
+.mplconfig/
+reports/executed_notebooks/

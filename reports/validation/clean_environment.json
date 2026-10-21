@@ -1,0 +1,10 @@
+{
+  "status": "passed",
+  "python_executable": "/private/tmp/urbangap-repro-20261021/bin/python",
+  "baseline_run_csv_sha256": "2eb7b9d523e6be4f351c974968bb58c67e6dcdfb82bb44809d006b7b4a0ffa85",
+  "setup": "new venv + requirements-lock.txt + editable project install",
+  "fresh_environment_csv_sha256": "2eb7b9d523e6be4f351c974968bb58c67e6dcdfb82bb44809d006b7b4a0ffa85",
+  "csv_byte_identical_across_runs": true,
+  "full_raw_to_final_pipeline": "passed",
+  "dependency_consistency": "pip check passed"
+}
