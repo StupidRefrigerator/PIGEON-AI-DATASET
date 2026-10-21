@@ -1,0 +1,19 @@
+# Python environment
+.venv/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.DS_Store
+
+# Geospatial data
+data/raw/
+data/interim/
+data/processed/
+
+# Notebook caches and generated maps
+notebooks/cache/
+notebooks/*.html
+
+# Databases
+*.duckdb
+*.duckdb.wal
