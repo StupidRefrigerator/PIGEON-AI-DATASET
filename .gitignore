@@ -8,7 +8,6 @@ __pycache__/
 # Geospatial data
 data/raw/
 data/interim/
-data/processed/
 
 # Notebook caches and generated maps
 notebooks/cache/
