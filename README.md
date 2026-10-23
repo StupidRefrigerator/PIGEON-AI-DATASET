@@ -1,68 +1,90 @@
-# UrbanGap
+# PIGEON-AI
 
-UrbanGap builds geographic, demographic and OpenStreetMap features to investigate potential gaps in public-toilet provision across established urban Greater Sydney. Existing toilets are a proxy for historical infrastructure placement, not ground truth for unmet need. No model training is included.
+## Project structure
 
-The approved study area contains **10,503 SA1s** and **16,228 H3 resolution-9 cells**, containing **2,570 mapped toilet facilities in 1,911 cells**.
+```text
+data/raw/            Original datasets; never edited by the pipeline
+data/reference/      Approved SA1/H3 IDs and growth-suburb names
+data/interim/        Rebuilt OSM extracts and selected study-area geometry
+data/processed/      Final feature table and geospatial exports
+src/pigeon_ai/       Geography, population, OSM and validation functions
+scripts/             Pipeline execution, validation and notebook checks
+notebooks/           Five short notebooks with checks and visualizations
+archive/             Historical code, documentation, datasets and baselines
+```
+
+## Data pipeline
+
+1. Read Census G01 population and join it to the original 2021 SA1 boundaries.
+2. Select the approved preliminary SA1s and exclude the named growth suburbs.
+3. Generate complete H3 resolution-9 cells and assign national toilet records.
+4. Estimate population inside each cell using area-weighted SA1 overlaps.
+5. Extract Sydney OSM data from the NSW PBF and convert selected objects to a GeoPackage.
+6. Calculate shop, food, bus-stop, station and park features.
+7. Estimate population within 250 m and 500 m, validate the results and save exports.
+
+`scripts/run_pipeline.py` shows these steps in order. Processing functions are in `src/pigeon_ai/`. Only the study geometry and OSM intermediates are saved for notebook inspection; other intermediate tables remain in memory.
+
+## Data sources
+
+- National Public Toilet Map: `data/raw/national_toilets.csv`.
+- ABS 2021 Census G01: the NSW SA1 data pack under `data/raw/census_2021/`.
+- ABS 2021 SA1 boundaries: `data/raw/abs_sa1_2021/`.
+- ABS 2026 Greater Sydney and suburb boundaries: `data/raw/abs_boundaries/` and `data/raw/abs_suburbs/`.
+- Geofabrik NSW OSM extract: `data/raw/osm/nsw.osm.pbf`, snapshot timestamp `2026-10-18T20:25:06Z`.
+
+Raw datasets and the archive are not stored in Git. A new checkout needs these files supplied separately. Baseline comparisons use the corrected dataset preserved in `archive/before_simplification/data/processed/`; keep that folder with the project.
 
 ## Setup
 
-Tested with Python **3.14.3**, osmium **1.19.1** (libosmium 2.23.1), and GDAL command-line tools **3.13.3** on macOS. GeoPandas uses the pinned Python geospatial stack; the GDAL CLI is separately required for OSM conversion. On macOS, native tools can be installed with `brew install osmium-tool gdal`. Native tool changes must pass the object and feature comparisons.
+Tested with Python 3.14.3, osmium 1.19.1 and GDAL CLI 3.13.3. Install the native tools first; on macOS:
+
+```sh
+brew install osmium-tool gdal
+```
 
 From the project root:
 
 ```sh
 python3.14 -m venv .venv
 source .venv/bin/activate
-python -m pip install -r requirements-lock.txt
-python -m pip install --no-deps -e '.[notebooks]'
+python -m pip install -r requirements.txt
+```
+
+Scripts and notebooks import the checked-out `pigeon_ai` package directly; no editable package installation is needed.
+
+## Running the pipeline
+
+```sh
 python scripts/run_pipeline.py
 python scripts/validate_outputs.py
 python scripts/check_notebooks.py
 ```
 
-The pipeline runs in a fresh Python process, rebuilds OSM from the NSW PBF, and checks all raw checksums before and after processing. It does not need internet access after dependencies are installed. It writes a candidate first and publishes only after validation. Expect a few minutes of polygon intersection work.
+The pipeline rebuilds the OSM extracts each time and takes a few minutes. Validation checks exact approved membership, counts, population, park bounds, schemas and export consistency. It compares every final column, including corrected nearest-park distances, against the preserved baseline by `hex_id`. Floating-point tolerance is `1e-6` absolute and `1e-10` relative. Run Python normally, without `-O`, so assertions remain enabled.
 
-Sources are not downloaded automatically. Keep the original source files at their paths in `docs/raw_manifest.json`. The preserved regression reference at `archive/baseline/data/processed/sydney_hex_features_v4.csv`, its `file_manifest.json`, and original notebooks must accompany this working project. Raw data and the full historical archive are intentionally ignored by Git; a code-only clone needs those data supplied separately. `docs/approved_*_ids.txt` are versioned geographic decision/validation inputs, not raw source substitutes.
+Use `jupyter lab` to explore the five notebooks after generating the outputs. Each runs independently from the project root or `notebooks/`; notebook checks use fresh kernels and leave source outputs empty.
 
-For notebook exploration, start `jupyter lab` after running the pipeline. Active notebooks read outputs, explain assumptions and show diagnostics; they do not write feature datasets. Each is independently executable with a clean kernel. `scripts/check_notebooks.py` executes all five without saving bulky outputs to the source notebooks.
+## Final output
 
-## Authoritative dataset
+`data/processed/sydney_hex_features.csv` contains **16,228 rows**: `hex_id`, the existing target/placement proxy `toilet_count`, and these **20 predictors**:
 
-- `data/processed/sydney_hex_features.csv`: model-table export, one row per hexagon.
-- `data/processed/sydney_hex_features.gpkg`: equivalent attributes and metric EPSG:7856 geometry; layer `hex_features`.
-- `data/processed/sydney_hex_features.geojson`: equivalent attributes with EPSG:4326 geometry for interoperable mapping.
-- `data/processed/feature_schema.json`: explicit identifier, placement proxy and model feature list.
+- `population_est`, `population_density`: estimated residents per cell and residents/km².
+- `shop_inside`, `shop_250m`, `shop_500m`: shop object counts inside the cell and centre buffers.
+- `food_inside`, `food_250m`, `food_500m`: cafe/restaurant object counts.
+- `bus_stop_inside`, `bus_stop_250m`, `bus_stop_500m`: bus-stop object counts.
+- `train_station_inside`, `train_station_250m`, `train_station_500m`: station object counts.
+- `park_area_inside_m2`, `park_area_250m_m2`, `park_area_500m_m2`: unioned park footprint areas in m².
+- `distance_nearest_park_m`: straight-line centroid distance to the nearest available park polygon.
+- `population_250m`, `population_500m`: estimated residents in centre buffers.
 
-The final table has 20 predictors, `hex_id`, and `toilet_count`. Geometry is available in the geospatial exports. The old representative-point park counts are excluded; park footprint areas and nearest mapped-park distance are retained. See [data dictionary](docs/data_dictionary.md).
+Equivalent `.gpkg` and `.geojson` files include geometry. The GeoPackage uses EPSG:7856, layer `hex_features`; GeoJSON uses EPSG:4326. Use `FEATURES` in `pigeon_ai.validation` to select predictors; keep the identifier, target and geometry separate. No model training is included.
 
-## Project structure
+## Important methodology notes
 
-```text
-data/raw/                 immutable original sources, including preserved PBFs
-data/interim/             reproducible population, study area, grid, OSM and candidate outputs
-data/processed/           authoritative feature exports and schema
-src/urbangap/             shared preparation, feature calculation and validation
-scripts/                  pipeline, output validation and notebook execution
-notebooks/                five independent explanatory notebooks
-docs/                     methodology, provenance, dictionary and approved geographic registries
-reports/validation/       baseline comparisons, corrections and validation summaries
-archive/baseline/         untouched initial snapshot, IDs, statistics and checksums
-archive/legacy_processed/ historical processed directory, including DuckDB and WAL together
-archive/exploration_artifacts/ historical map and geocoding cache
-```
-
-## Reproduction and important findings
-
-The pipeline extracts G01 population; reconstructs approved SA1 geography and growth exclusions; generates H3 cells; assigns national toilet records; allocates population using complete original SA1 areas; reconstructs and converts OSM; calculates active-shop/food/transport counts; reproduces union-based park areas; corrects nearest-park distances using all available park polygons; and allocates contextual buffer population.
-
-The cleanup discovered that the historical preliminary membership reproduces at density **50**, despite saved counts/titles suggesting **500**. The active urban-core threshold is now 500. To preserve the approved boundary, production uses an explicit preliminary SA1 selection registry followed by the original spatial growth-suburb exclusions. It does **not** claim that a new 500-based cluster recipe independently recreates the old boundary. See [methodology](docs/methodology.md) and [migration record](docs/migration_report.md).
-
-OSM extraction/conversion commands were reconstructed and validated against preserved objects; their historical command history was not recovered. The NSW PBF records a replication timestamp of `2026-10-18T20:25:06Z`. Nearest-park distances are correct among available extracted park polygons, not guaranteed across incomplete OSM mapping or omitted relations. See [provenance](docs/data_provenance.md).
-
-## Validation evidence
-
-`reports/validation/validation.json` records a successful run, source integrity, environment, exact membership and totals, and export hashes. `feature_comparison.csv` reports every retained attribute against v4 by `hex_id`; `nearest_park_corrections.csv` preserves old/new distances for every corrected cell. Numerical comparisons use absolute tolerance `1e-6` and relative tolerance `1e-10`; count changes are not expected. All original park-area features are preserved.
-
-See [completed validation results](docs/validation_results.md) for the full checklist. The pipeline also passed in a newly installed virtual environment and reproduced the same CSV byte-for-byte.
-
-For ML work, use only the `model_features` list from the schema. Keep `hex_id` and geometry out of predictors; choose a target formulation explicitly using the placement proxy. Spatial evaluation and interpretation of apparent provision gaps remain modeling work, not part of this cleanup.
+- The approved study area contains **10,503 SA1s**. Historical selection used **50 people/km²**, not 500. Approved preliminary membership is frozen in `data/reference/`; growth exclusions are recalculated using suburb and SA1 representative points.
+- H3 cells remain whole and can cross the study boundary. They contain **2,570 toilet records across 1,911 occupied cells**. Existing toilets describe historical placement, not a direct measure of infrastructure need.
+- Metric calculations use **EPSG:7856**. Population contributions are `SA1 population × overlap area / complete original SA1 area`. Residents are assumed uniformly distributed within each SA1. Context may extend outside the prediction area; overlapping buffers must not be summed as unique residents.
+- OSM excludes `shop=vacant`, counts cafes/restaurants as food, and preserves distinct objects even when names match. Polygon destinations become representative points before projection; inside counts use `within`, buffer counts use `intersects`.
+- Park areas use unioned original polygons. Their historical Shapely buffers use 8 segments per quadrant; population/count buffers use GeoPandas's 16. These definitions are deliberately preserved.
+- Nearest-park queries use **all available park polygons**, retaining the corrected distances. OSM extraction uses bbox `150.45,-34.25,151.40,-33.35`, `complete_ways`, and shop/food/bus/station/park tag filters with referenced objects. Mapping and relation coverage can be incomplete; distances are not walking distances or globally complete park access estimates.

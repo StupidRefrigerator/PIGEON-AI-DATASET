@@ -1,32 +1,36 @@
 #!/usr/bin/env python3
-"""Execute each notebook in a fresh kernel, keeping bulky outputs out of source."""
 from pathlib import Path
 import os
 import sys
 import tempfile
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 import nbformat
+from jupyter_client import KernelManager
 from nbclient import NotebookClient
-from urbangap.common import ROOT, REPORTS, write_json
+
+ROOT = Path(__file__).resolve().parents[1]
 
 
 if __name__ == "__main__":
-    results = []
-    with tempfile.TemporaryDirectory(prefix="urbangap-notebooks-") as temporary:
+    with tempfile.TemporaryDirectory(prefix="pigeon-ai-notebooks-") as temporary:
         os.environ["MPLCONFIGDIR"] = temporary
         os.environ["IPYTHONDIR"] = temporary
-        # Use this interpreter, not whichever 'python3' kernel happens to be registered.
-        kernels = Path(temporary) / "kernels/urbangap"
-        kernels.mkdir(parents=True)
-        write_json(kernels / "kernel.json", {"argv": [sys.executable, "-m", "ipykernel_launcher", "-f", "{connection_file}"],
-                   "display_name": "UrbanGap validation", "language": "python"})
-        os.environ["JUPYTER_PATH"] = temporary + os.pathsep + os.environ.get("JUPYTER_PATH", "")
         for path in sorted((ROOT / "notebooks").glob("*.ipynb")):
             notebook = nbformat.read(path, as_version=4)
-            client = NotebookClient(notebook, timeout=300, kernel_name="urbangap",
-                                    resources={"metadata": {"path": str(ROOT / "notebooks")}})
-            client.execute()
-            results.append({"notebook": path.name, "status": "passed", "cells": len(notebook.cells)})
+            manager = KernelManager(kernel_name="python3")
+            manager.kernel_spec.argv = [
+                sys.executable, "-m", "ipykernel_launcher", "-f", "{connection_file}"
+            ]
+            client = NotebookClient(
+                notebook,
+                km=manager,
+                timeout=300,
+                resources={"metadata": {"path": str(ROOT / "notebooks")}},
+            )
+            # An external manager needs explicit cleanup after each fresh kernel.
+            try:
+                client.execute()
+            finally:
+                if manager.has_kernel:
+                    manager.shutdown_kernel(now=True)
             print("PASS:", path.name, flush=True)
-    write_json(REPORTS / "notebook_execution.json", results)

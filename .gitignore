@@ -28,4 +28,3 @@ dist/
 .pytest_cache/
 .jupyter/
 .mplconfig/
-reports/executed_notebooks/
