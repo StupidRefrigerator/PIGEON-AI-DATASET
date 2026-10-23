@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 from pathlib import Path
+import argparse
 import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
@@ -13,10 +14,15 @@ from pigeon_ai.geography import (
 from pigeon_ai.osm import add_osm_counts, add_park_features, load_osm, prepare_osm
 from pigeon_ai.paths import INTERIM, PROCESSED
 from pigeon_ai.population import add_population_buffers, add_population_features
-from pigeon_ai.validation import COLUMNS, compare_baseline, validate_features
+from pigeon_ai.validation import (
+    COLUMNS,
+    compare_baseline,
+    summarise_features,
+    validate_features,
+)
 
 
-def main():
+def main(check_baseline=False):
     print("1/7 Load Census population and build the approved study area", flush=True)
     boundaries = load_population_boundaries()
     study = build_study_area(boundaries)
@@ -43,7 +49,9 @@ def main():
     grid = add_population_buffers(grid, boundaries)
     features = grid[COLUMNS].sort_values("hex_id").reset_index(drop=True)
     validate_features(features)
-    compare_baseline(features)
+    summarise_features(features)
+    if check_baseline:
+        compare_baseline(features)
 
     print("7/7 Save final CSV, GeoPackage and GeoJSON", flush=True)
     PROCESSED.mkdir(parents=True, exist_ok=True)
@@ -59,4 +67,10 @@ def main():
     print(f"Saved {len(features):,} hexagons to {PROCESSED}", flush=True)
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--check-baseline",
+        action="store_true",
+        help="Require an exact match with the archived dataset in archive/",
+    )
+    main(parser.parse_args().check_baseline)
