@@ -27,3 +27,6 @@ dist/
 .pytest_cache/
 .jupyter/
 .mplconfig/
+
+# Trained models
+models/

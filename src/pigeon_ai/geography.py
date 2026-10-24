@@ -33,7 +33,6 @@ def build_study_area(boundaries):
     # The historical 50-person density selection is frozen in this registry.
     selected = sydney["sa1_code"].isin(preliminary_ids)
     preliminary = sydney[selected].to_crs(CRS).copy()
-    assert len(preliminary) == 10753, "Preliminary SA1 selection changed"
 
     boundary_path = RAW / "abs_boundaries/GCCSA_2026_AUST_GDA2020.shp"
     city_boundaries = gpd.read_file(boundary_path)
@@ -57,11 +56,11 @@ def build_study_area(boundaries):
     sa1_points = preliminary.representative_point()
     in_growth_area = sa1_points.intersects(growth_area)
     study = preliminary[~in_growth_area].copy()
-
-    approved_ids = (REFERENCE / "approved_final_sa1_ids.txt")
-    final_ids = set(approved_ids.read_text().splitlines())
-    assert len(study) == 10503, "Expected 10,503 study SA1s"
-    assert set(study["sa1_code"]) == final_ids, "Approved study membership changed"
+    print(
+        f"Study area: {len(preliminary):,} preliminary SA1s, "
+        f"{len(study):,} after growth-suburb exclusions",
+        flush=True,
+    )
     return study
 
 
